@@ -518,10 +518,12 @@ export class MongoStorageAdapter implements StorageAdapter {
     let isPointerField = false;
     pipeline = pipeline.map((stage) => {
       if (stage.$group && stage.$group._id) {
-        const field = stage.$group._id.substring(1);
-        if (schema.fields[field] && schema.fields[field].type === 'Pointer') {
-          isPointerField = true;
-          stage.$group._id = `$_p_${field}`;
+        if (typeof stage.$group._id === 'string') {
+          const field = stage.$group._id.substring(1);
+          if (schema.fields[field] && schema.fields[field].type === 'Pointer') {
+            isPointerField = true;
+            stage.$group._id = `$_p_${field}`;
+          }
         }
       }
       if (stage.$match) {
